@@ -1,7 +1,7 @@
 #!/bin/bash +xe
 
 REPO_NAME=`pushd ${WORKSPACE}/build >/dev/null && git remote show origin -n | grep "Fetch URL:" | sed "s#^.*/\(.*\).git#\1#" && popd > /dev/null`
-REPOS=("on-http" "on-taskgraph" "on-dhcp-proxy" "on-tftp" "on-syslog")
+REPOS=("on-taskgraph" "on-dhcp-proxy" "on-tftp" "on-syslog")
 
 VCOMPUTE="${VCOMPUTE}"
 if [ -z "${VCOMPUTE}" ]; then
@@ -61,6 +61,13 @@ dlTftpFiles() {
 prepareDeps() {
   rm -rf ${WORKSPACE}/build-deps
   mkdir -p ${WORKSPACE}/build-deps/${REPO_NAME} 
+  
+  cd ${WORKSPACE}/build-deps
+  git clone https://github.com/billyabildgaard/on-http.git
+  cd on-http
+  git checkout ${GIT_REFSPEC}
+  npm install --production
+
   for i in ${REPOS[@]}; do
      cd ${WORKSPACE}/build-deps
      if [ "${i}" != "${REPO_NAME}" ]; then
